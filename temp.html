@@ -95,8 +95,8 @@ function startAction(){
 	
 	form.addEventListener('change', function(){
 		let rangePlus = priceOfRange(showRange.value, radio, priceForBigRoom);
-        getFullPrice(rangePlus, p, options, radio, therapy)
-        console.log(radio)
+        p.innerHTML = '';
+        getFullPrice(rangePlus, p, options, radio, therapy);
         	});
 }
 
@@ -104,16 +104,26 @@ function startAction(){
 function getFullPrice(resultObj, elem, elems1, elems2, elem3){
     let price = resultObj.price;
     let persent = resultObj.persent;
+    let persentNum = resultObj.persentNum;
     let aromaT = elem3.checked ? elem3.dataset.price: 0;
     let smell = elems1[getSelected(elems1)].dataset.price;
     let sum = Number(price) + Number(persent) + Number(aromaT) + Number(smell); 
+    let allPrices = {
+        ['+' + price]: ` Цена за выбранный тип бани:  ${price} ед.;`,
+        ['+' + persent]: ` Надбавка, за количество людей - ${resultObj.persentNum}%: ${resultObj.persent} ед.;`,
+        ['+' + aromaT]: `Aroma-therapy: ${aromaT} ед.;`,
+        ['+' + smell]: `Отдушка для пара:  ${smell} ед.;`,
+    }
+        let ol = createEl(elem, 'ol');
+        let total = elem.insertAdjacentHTML('afterBegin',`<p>Всего: ${sum}  ед. В том числe:</p>`);
     
-    elem.innerHTML = `Всего: ${sum}  ед. В том числe:` + '<br>';
-    elem.innerHTML += price > 0 ? ` Цена за выбранный тип бани:  ${price} ед;` + '<br>' : '';
-    elem.innerHTML += persent > 0 ? ` Надбавка, за количество людей - ${resultObj.persentNum}%: ${persent} ед;` + '<br>' : '';
-    elem.innerHTML += aromaT > 0 ? `Aroma-therapy: ${aromaT} ед;` + '<br>' : '';
-    elem.innerHTML += smell > 0 ? `Отдушка для пара:  ${smell} ед.` : '';
-}
+    for(let key in allPrices){
+        if(key > 0){
+            let li = createEl(ol, 'li');
+            li.innerHTML = allPrices[key]; 
+        }
+    }   
+   }
 
 function generateRadioSet(par, obj){
     for(let key in obj){
@@ -155,8 +165,8 @@ function priceOfRange(valueRange, elemsOfRadio, obj){
             return {
                 price: price,
                 persent: price / 100 * key,
-                persentNum: key
-                }
+                persentNum: key,
+                };
             }
 
 	}
